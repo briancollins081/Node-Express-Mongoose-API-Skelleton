@@ -1,8 +1,8 @@
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const {onError, deleteFile} = require('../constants/global');
-const {privateKey, loginOptions} = require('../constants/JWTService');
+const { onError, deleteFile } = require('../constants/global');
+const { privateKey, loginOptions } = require('../constants/JWTService');
 
 const User = require('../models/user');
 
@@ -72,7 +72,8 @@ exports.userSignin = async (req, res, next) => {
             data: {
                 token: token,
                 userId: currentUser._id
-            }
+            },
+            success: true
         })
 
     } catch (error) {
@@ -102,7 +103,8 @@ exports.getUsers = async (req, res, next) => {
             page: page,
             fetchSize: users.length,
             size: size,
-            totalRecords: totalRecords
+            totalRecords: totalRecords,
+            success: true
         })
     } catch (error) {
         onError(error.toString(), 500, null, true, next);
@@ -118,7 +120,8 @@ exports.getUser = async (req, res, next) => {
         }
         res.status(200).json({
             message: "Fetched user successfuly",
-            data: user
+            data: user,
+            success: true
         })
     } catch (error) {
         onError(error.toString(), 500, null, true, next);
@@ -126,13 +129,10 @@ exports.getUser = async (req, res, next) => {
 }
 
 exports.updateUser = async (req, res, next) => {
-    if(req.userId.toString() !== req.body.id.toString()){
+    if (req.userId.toString() !== req.params.id.toString()) {
         return onError("You can only update your own profile!", 403, null, true, next);
     }
-    const reqFiles = req.files['profileimg'];
-    if (!reqFiles) {
-        return onError("Only .jpg, .jpeg, .png are accepted as profile photos", 403, null, true, next);
-    }
+    const reqFiles = req.files['profilepic'];
     const profileimage = reqFiles[0];
     try {
         const errors = validationResult(req);
@@ -175,11 +175,29 @@ exports.updateUser = async (req, res, next) => {
 
         res.status(201).json({
             message: "User updated successfully",
-            data: updatedUser
+            data: updatedUser,
+            success: true
         })
 
     } catch (error) {
         deleteFile(profileimage.path);
+        onError(error.toString(), 500, null, true, next);
+    }
+}
+
+exports.deleteUser = async (req, res, next) => {
+    const { id } = req.params;
+    try {
+        const user = await User.findById(id);
+        if (user) {
+            await user.remove();
+        }
+        res.status(201)
+        res.json({
+            message: "Deleted user successfully!",
+            success: true
+        })
+    } catch (error) {
         onError(error.toString(), 500, null, true, next);
     }
 }

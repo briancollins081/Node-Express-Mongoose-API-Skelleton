@@ -9,4 +9,4 @@ const typesSchema = new Schema({
     }
 }, { timestamps: true });
 
-module.exports = mongoose.model('Types', typesSchema);
+module.exports = mongoose.model('Type', typesSchema);

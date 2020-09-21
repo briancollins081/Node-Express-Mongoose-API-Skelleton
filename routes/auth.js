@@ -67,19 +67,17 @@ router.post(
 );
 
 router.get(
-    'users/:page/:size/:sort',
+    '/users/:page/:size/:sort',
     isAuth,
     authController.getUsers
 );
-
 router.get(
-    'users/:id',
+    '/users/:id',
     isAuth,
     authController.getUser
 );
-
 router.patch(
-    'users/update/:id',
+    '/users/update/:id',
     isAuth,
     imageUploadMiddleware,
     [
@@ -93,25 +91,26 @@ router.patch(
             .trim()
             .isEmail()
             .withMessage('Please enter a valid email address')
-            .custom((value, { req }) => {
-                return User.findOne({ email: value })
-                    .then(userDoc => {
-                        if (userDoc) {
-                            return Promise.reject('Email address is already taken');
-                        }
-                    });
-            })
+            // .custom((value, { req }) => {
+            //     return User.findOne({ email: value })
+            //         .then(userDoc => {
+            //             if (userDoc) {
+            //                 return Promise.reject('Email address is already taken');
+            //             }
+            //         });
+            // })
             .normalizeEmail(),
         body('phone')
             .trim()
-            .custom((value, { req }) => {
-                return User.findOne({ phone: value })
-                    .then(userDoc => {
-                        if (userDoc) {
-                            return Promise.reject('Phone number is already used')
-                        }
-                    })
-            }),
+            // .custom((value, { req }) => {
+            //     return User.findOne({ phone: value })
+            //         .then(userDoc => {
+            //             if (userDoc) {
+            //                 return Promise.reject('Phone number is already used')
+            //             }
+            //         })
+            // })
+            ,
         body('password')
             .trim()
             .isLength({ min: 8 })
@@ -120,5 +119,6 @@ router.patch(
     authController.updateUser
 );
 
+router.delete('/users/:id', isAuth, authController.deleteUser)
 
 module.exports = router;
