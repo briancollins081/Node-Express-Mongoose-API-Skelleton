@@ -155,8 +155,10 @@ exports.editPost = async (req, res, next) => {
 }
 exports.getAllPosts = async (req, res, next) => {
     let { page, size, sort, type } = req.params;
-
-    const typeObject = await Type.findById(type);
+    const regexQuery = {
+        title: new RegExp(type, 'i')
+      }
+    const typeObject = await Type.findOne(regexQuery);
     if(!typeObject){
         return onError("Provide an existing type", 404, null, true, next);
     }
@@ -165,7 +167,7 @@ exports.getAllPosts = async (req, res, next) => {
     sort = +sort <= 0 ? -1 : 1;
     const skip = (page - 1) * +size
     try {
-        const posts = await Post.find({type})
+        const posts = await Post.find({type: typeObject._id})
             .populate('type')
             .populate('creator')
             .populate('category')
