@@ -21,6 +21,16 @@ const profileStorage = multer.diskStorage({
     }
 });
 
+const galleryStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/gallery/');
+    },
+    filename: (req, file, cb) => {
+        const name = file.originalname;
+        cb(null, `${new Date().toISOString()}-${transformFilename(18)}${name.substr(name.lastIndexOf('.'))}`);
+    }
+});
+
 
 const isImage = filemimetype => {
     switch (filemimetype) {
@@ -52,5 +62,10 @@ exports.imageUploadMiddleware = multer({ storage: imageStorage, fileFilter: imag
 exports.profileUploadMiddleware = multer({ storage: profileStorage, fileFilter: imageFilter })
     .fields([
         { name: 'profilepic', maxCount: 1 },
+        // { name: 'postimage', maxCount: 1 },
+    ]);
+exports.galleryUploadMiddleware = multer({ storage: galleryStorage, fileFilter: imageFilter })
+    .fields([
+        { name: 'gallerypic', maxCount: 1 },
         // { name: 'postimage', maxCount: 1 },
     ]);

@@ -12,6 +12,7 @@ dotenv.config();
 const authRoutes = require('./routes/auth');
 const postRoutes = require('./routes/posts');
 const commonRoutes = require('./routes/common');
+const mailRoutes = require('./routes/email');
 
 // app
 const app = express();
@@ -19,6 +20,7 @@ const app = express();
 // static folders
 app.use('/uploads/images', express.static(path.join(__dirname, 'uploads', 'images')));
 app.use('/uploads/profiles', express.static(path.join(__dirname, 'uploads', 'others')));
+app.use('/uploads/gallery', express.static(path.join(__dirname, 'uploads', 'gallery')));
 
 // global middlewares
 app.use(bodyParser.json());
@@ -35,6 +37,7 @@ app.use((req, res, next) => {
 app.use('/auth', authRoutes);
 app.use('/content', postRoutes);
 app.use('/common', commonRoutes);
+app.use('/email', mailRoutes);
 
 app.use((error, req, res, next) => {
     console.log(error);

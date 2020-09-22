@@ -159,7 +159,7 @@ exports.getAllPosts = async (req, res, next) => {
         title: new RegExp(type, 'i')
       }
     const typeObject = await Type.findOne(regexQuery);
-    if(!typeObject){
+    if(!typeObject && type!='latest'){
         return onError("Provide an existing type", 404, null, true, next);
     }
     size = +size <= 0 ? 10 : +size;
@@ -167,7 +167,9 @@ exports.getAllPosts = async (req, res, next) => {
     sort = +sort <= 0 ? -1 : 1;
     const skip = (page - 1) * +size
     try {
-        const posts = await Post.find({type: typeObject._id})
+      let posts = [];
+      if(typeObject){
+        posts = await Post.find({type: typeObject._id})
             .populate('type')
             .populate('creator')
             .populate('category')
@@ -175,6 +177,19 @@ exports.getAllPosts = async (req, res, next) => {
             .sort({ createdAt: sort })
             .skip(skip)
             .limit(size);
+      }
+      if(type == 'latest'){
+        posts = await Post.find()
+            .populate('type')
+            .populate('creator')
+            .populate('category')
+            .populate('location')
+            .sort({ createdAt: sort })
+            .skip(skip)
+            .limit(size);
+      }
+
+
         const total = await Post.find().countDocuments();
         if (!posts) {
             posts = [];
@@ -195,6 +210,7 @@ exports.getAllPosts = async (req, res, next) => {
         onError(error.toString(), 500, null, true, next);
     }
 }
+
 exports.getPostById = async (req, res, next) => {
     const { postId } = req.params;
     try {

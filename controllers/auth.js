@@ -1,7 +1,7 @@
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { onError, deleteFile } = require('../constants/global');
+const { onError, deleteFile, sendMail } = require('../constants/global');
 const { privateKey, loginOptions } = require('../constants/JWTService');
 
 const User = require('../models/user');
@@ -201,4 +201,21 @@ exports.deleteUser = async (req, res, next) => {
     } catch (error) {
         onError(error.toString(), 500, null, true, next);
     }
+}
+
+exports.dispatchEmail = async (req, res, next) => {
+    console.log("email request came");
+    let user = req.body;
+    console.log({user});
+    sendMail(user, (err, info) => {
+        if (err) {
+            console.log(err);
+            res.status(400);
+            res.json({ success: false, error: "Email not sent" });
+        } else {
+            console.log("Email sent");
+            res.status(200);
+            res.json({ success: true, data: info });
+        }
+    });
 }

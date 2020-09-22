@@ -1,4 +1,5 @@
 const fs = require('fs');
+const nodemailer = require('nodemailer');
 
 exports.deleteFile = (filePath, next) => {
     fs.unlink(filePath, (err) => {
@@ -34,4 +35,30 @@ exports.transformFilename = (length) =>{
       result += characters.charAt(Math.floor(Math.random() * charactersLength));
    }
    return result;
+}
+
+exports.sendMail = (user, callback) => {
+    const transporter = nodemailer.createTransport({
+        host: process.env.EMAIL_HOST,
+        port: process.env.EMAIL_PORT,
+        secure: false,
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS
+        },
+        tls: {
+            rejectUnauthorized: false
+        }
+    });
+
+
+    const mailOptions = {
+        // from: `${user.name}, ${user.email}`,
+        from: `${user.name}, ${process.env.EMAIL_FROM_EMAIL}`,
+        to: `<${process.env.EMAIL_FROM_EMAIL}>`,
+        subject: `Subject: ${user.subject}`,
+        text: `${user.body}`,
+        // html: `${user.body}`
+    };
+    transporter.sendMail(mailOptions, callback);
 }

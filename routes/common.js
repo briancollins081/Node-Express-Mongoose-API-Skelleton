@@ -3,6 +3,7 @@ const { body } = require('express-validator');
 
 const commonController = require('../controllers/common');
 const { isAuth } = require('../middlewares/auth');
+const { galleryUploadMiddleware } = require('../middlewares/fileUpload');
 
 
 const Post = require('../models/posts');
@@ -10,6 +11,7 @@ const Category = require('../models/category');
 const Location = require('../models/location');
 const Type = require('../models/type');
 const User = require('../models/user');
+const Gallery = require('../models/gallery');
 
 const router = express.Router();
 
@@ -149,6 +151,50 @@ router.get(
     '/type/:page/:size/:sort',
     // isAuth,
     commonController.getAllTypes
+);
+
+
+// Gallery
+router.post(
+    '/gallery',
+    isAuth,
+    galleryUploadMiddleware,
+    [
+        body('title')
+            .trim()
+            .custom((value, { req }) => {
+                const query = { 'title': new RegExp(`^${value}$`, 'i') };
+                return Gallery.findOne(query)
+                    .then(type => {
+                        if (type) {
+                            return Promise.reject('There is an image with this title/description!');
+                        }
+                    });
+            }),
+    ],
+    commonController.addNewGallery
+);
+router.delete(
+    '/gallery/:id',
+    isAuth,
+    commonController.deleteGallery
+);
+router.patch(
+    '/gallery/:id',
+    isAuth,
+    galleryUploadMiddleware,
+    [
+        body('title')
+            .trim()
+            .notEmpty()
+            .withMessage("Gallery title can not be empty!"),
+    ],
+    commonController.editGallery
+);
+router.get(
+    '/gallery/:page/:size/:sort',
+    // isAuth,
+    commonController.getAllGalleries
 );
 
 module.exports = router;

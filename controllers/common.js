@@ -5,8 +5,9 @@ const Category = require('../models/category');
 const Location = require('../models/location');
 const Type = require('../models/type');
 const User = require('../models/user');
+const Gallery = require('../models/gallery');
 
-const { onError } = require('../constants/global');
+const { onError, deleteFile } = require('../constants/global');
 
 // Locations
 exports.addNewLocation = async (req, res, next) => {
@@ -357,6 +358,137 @@ exports.getTypeById = async (req, res, next) => {
         res.status(200).json({
             message: "Type fetched successfully!",
             data: type,
+            success: true,
+            vlderror: false
+        })
+    } catch (error) {
+        onError(error.toString(), 500, null, true, next);
+    }
+}
+
+// Gallery
+exports.addNewGallery = async (req, res, next) => {
+    const { title } = req.body;
+    try {
+        const galleryimg = req.files['gallerypic'][0];
+        if(!galleryimg){
+            return onError('Please supply a .jpg, .jpeg, .png image file', 422, null, true, next);
+        }
+
+        // Check validation
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return onError('Validation failed', 422, errors, true, next);
+        }
+
+        const gallery = new Gallery({
+            title: title,
+            image: galleryimg.path
+        });
+        const savedGallery = await gallery.save();
+
+        res.status(201).json({
+            message: "Gallery added successful",
+            data: savedGallery,
+            success: true,
+            vlderror: false
+        });
+    } catch (error) {
+        onError(error.toString(), 500, null, true, next);
+    }
+}
+exports.editGallery = async (req, res, next) => {
+    const { id } = req.params;
+    const { title } = req.body;
+    try {
+        const galleryimg = req.files['gallerypic'][0];
+        const oldGallery = await Gallery.findById(id);
+        if (!oldGallery) {
+            return onError('Gallery with this id does not exist', 404, null, true, next);
+        }
+        if(galleryimg){
+          deleteFile(oldGallery.image);
+        }
+        // Check validation
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return onError('Validation failed', 422, errors, true, next);
+        }
+
+        oldGallery.title = title;
+        oldGallery.image = galleryimg.path;
+
+        const updatedGallery = await oldGallery.save();
+
+        res.status(201).json({
+            message: "Type created successful",
+            data: updatedGallery,
+            success: true,
+            vlderror: false
+        });
+    } catch (error) {
+        onError(error.toString(), 500, null, true, next);
+    }
+}
+exports.deleteGallery = async (req, res, next) => {
+    const { id } = req.params;
+    try {
+        const type = await Gallery.findById(id);
+        if(type){
+            const deleteCount = await type.remove();
+            if(deleteCount && deleteCount > 0){
+              deleteFile(type.image);
+            }
+        }
+        res.status(201);
+        res.json({
+            message: "Deleted gallery entry succesfully",
+            success: true
+        })
+    } catch (error) {
+        onError(error.toString(), 500, null, true, next);
+    }
+}
+exports.getAllGalleries = async (req, res, next) => {
+    let { page, size } = req.params;
+    size = +size <= 0 ? 10 : +size;
+    page = +page <= 0 ? 1 : +page;
+    const skip = (page - 1) * +size
+    try {
+        const galleries = await Gallery.find()
+            .skip(skip)
+            .limit(size);
+        const total = await Gallery.find().countDocuments();
+        if (!galleries) {
+            galleries = [];
+        }
+        res.status(200).json({
+            message: "All galleries fetched successfully!",
+            data: {
+                galleries,
+                page,
+                fetchSize: galleries.length,
+                pageSize: size,
+                totalRecords: total
+            },
+            success: true,
+            vlderror: false
+        })
+    } catch (error) {
+        onError(error.toString(), 500, null, true, next);
+    }
+}
+exports.getGalleryById = async (req, res, next) => {
+    const { id } = req.params;
+    try {
+        const gallery = await Gallery.findById(id);
+
+        if (!gallery) {
+            return onError("No gallery found with this id", 404, null, true, next);
+        }
+        res.status(200).json({
+            message: "Gallery fetched successfully!",
+            data: gallery,
             success: true,
             vlderror: false
         })
