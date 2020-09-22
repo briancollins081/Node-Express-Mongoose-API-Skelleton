@@ -1,13 +1,27 @@
 const multer = require('multer');
+const {transformFilename} = require('../constants/global')
 //  image uploads
 const imageStorage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'uploads/images/');
     },
     filename: (req, file, cb) => {
-        cb(null, `${new Date().toISOString()}-${file.originalname}`);
+        // console.log({file});
+        const name = file.originalname;
+        cb(null, `${new Date().toISOString()}-${transformFilename(18)}${name.substr(name.lastIndexOf('.'))}`);
     }
 });
+const profileStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/others/');
+    },
+    filename: (req, file, cb) => {
+        const name = file.originalname;
+        cb(null, `${new Date().toISOString()}-${transformFilename(18)}${name.substr(name.lastIndexOf('.'))}`);
+    }
+});
+
+
 const isImage = filemimetype => {
     switch (filemimetype) {
         case 'image/jpg':
@@ -35,4 +49,3 @@ exports.imageUploadMiddleware = multer({ storage: imageStorage, fileFilter: imag
         { name: 'profilepic', maxCount: 1 },
         { name: 'postimage', maxCount: 1 },
     ]);
-

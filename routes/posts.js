@@ -154,7 +154,7 @@ router.patch(
 );
 
 router.get(
-    '/posts/:page/:size/:sort',
+    '/posts/:type/:page/:size/:sort',
     // isAuth,
     postController.getAllPosts
 );

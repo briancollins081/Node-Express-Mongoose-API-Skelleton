@@ -153,14 +153,19 @@ exports.editPost = async (req, res, next) => {
         onError(error.toString(), 500, null, true, next);
     }
 }
-exports.getAllPosts = async (req, res, nextx) => {
-    let { page, size, sort } = req.params;
+exports.getAllPosts = async (req, res, next) => {
+    let { page, size, sort, type } = req.params;
+
+    const typeObject = await Type.findById(type);
+    if(!typeObject){
+        return onError("Provide an existing type", 404, null, true, next);
+    }
     size = +size <= 0 ? 10 : +size;
     page = +page <= 0 ? 1 : +page;
     sort = +sort <= 0 ? -1 : 1;
     const skip = (page - 1) * +size
     try {
-        const posts = await Post.find()
+        const posts = await Post.find({type})
             .populate('type')
             .populate('creator')
             .populate('category')
@@ -173,7 +178,7 @@ exports.getAllPosts = async (req, res, nextx) => {
             posts = [];
         }
         res.status(200).json({
-            message: "All tags fetched successfully!",
+            message: "All posts fetched successfully!",
             data: {
                 posts,
                 page,
