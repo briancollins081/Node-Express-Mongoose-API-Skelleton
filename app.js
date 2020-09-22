@@ -17,8 +17,8 @@ const commonRoutes = require('./routes/common');
 const app = express();
 
 // static folders
-app.use('/uploads/blogs', express.static(path.join(__dirname, 'uploads', 'blogs', 'imgs')));
-app.use('/uploads/news', express.static(path.join(__dirname, 'uploads', 'news', 'imgs')));
+app.use('/uploads/images', express.static(path.join(__dirname, 'uploads', 'images')));
+app.use('/uploads/profiles', express.static(path.join(__dirname, 'uploads', 'others')));
 
 // global middlewares
 app.use(bodyParser.json());

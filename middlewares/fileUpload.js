@@ -46,6 +46,11 @@ const imageFilter = (req, file, cb) => {
 // uploads
 exports.imageUploadMiddleware = multer({ storage: imageStorage, fileFilter: imageFilter })
     .fields([
-        { name: 'profilepic', maxCount: 1 },
+        // { name: 'profilepic', maxCount: 1 },
         { name: 'postimage', maxCount: 1 },
+    ]);
+exports.profileUploadMiddleware = multer({ storage: profileStorage, fileFilter: imageFilter })
+    .fields([
+        { name: 'profilepic', maxCount: 1 },
+        // { name: 'postimage', maxCount: 1 },
     ]);

@@ -5,13 +5,13 @@ const { body } = require('express-validator');
 const User = require('../models/user');
 const authController = require('../controllers/auth');
 const { isAuth } = require('../middlewares/auth');
-const { imageUploadMiddleware } = require('../middlewares/fileUpload');
+const { imageUploadMiddleware, profileUploadMiddleware } = require('../middlewares/fileUpload');
 
 const router = express.Router();
 
 router.post(
     '/signup',
-    imageUploadMiddleware,
+    profileUploadMiddleware,
     [
         body('firstname')
             .trim()

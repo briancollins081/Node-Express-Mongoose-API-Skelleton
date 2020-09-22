@@ -11,6 +11,7 @@ exports.userSignup = async (req, res, next) => {
     try {
         const errors = validationResult(req);
         const profileimage = req.files['profilepic'][0];
+        console.log({profileimage});
         const { firstname, lastname, email, phone, password } = req.body;
         // console.log(profileimage.path);
         if (!errors.isEmpty()) {
@@ -26,7 +27,7 @@ exports.userSignup = async (req, res, next) => {
             email: email,
             phone: phone,
             password: hpassword,
-            profilepicture: profileimage.path,
+            profilepicture: `uploads/profiles/${profileimage.filename}`,
         });
 
         const userRes = await user.save();
