@@ -12,7 +12,7 @@ Remember to create your .env file for any variables that are used in the app whi
 
 The emailing bit was still pending but can be done **(TODO)**
 
-  `
+ ```
   **auth**
   
   JWT_SECRET='JWT SECRET STRING GOES HERE FOR AUTH'
@@ -39,4 +39,4 @@ The emailing bit was still pending but can be done **(TODO)**
   
   EMAIL_FROM_USER_NAME=
   
-  EMAIL_FROM_EMAIL=
+  EMAIL_FROM_EMAIL=```
