@@ -1,5 +1,7 @@
 # React-redux-toolkit-project-backend
 
+Linked to the frontend: [**React-redux-toolkit-project-ui**](https://github.com/briancollins081/React-redux-toolkit-project-ui)
+
 Node.js Express.js Mongoose.js REST API
 
 This is the backend that will be used to update the redux state on the fronend app
