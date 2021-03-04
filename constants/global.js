@@ -37,7 +37,7 @@ exports.transformFilename = (length) =>{
    return result;
 }
 
-exports.sendMail = (user, callback) => {
+/* exports.sendMail = (user, callback) => {
     const transporter = nodemailer.createTransport({
         host: process.env.EMAIL_HOST,
         port: process.env.EMAIL_PORT,
@@ -61,4 +61,4 @@ exports.sendMail = (user, callback) => {
         // html: `${user.body}`
     };
     transporter.sendMail(mailOptions, callback);
-}
+} */

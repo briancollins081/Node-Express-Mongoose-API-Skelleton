@@ -37,7 +37,7 @@ app.use((req, res, next) => {
 app.use('/auth', authRoutes);
 app.use('/content', postRoutes);
 app.use('/common', commonRoutes);
-app.use('/email', mailRoutes);
+// app.use('/email', mailRoutes);
 
 app.use((error, req, res, next) => {
     console.log(error);

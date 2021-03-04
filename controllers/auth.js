@@ -204,7 +204,7 @@ exports.deleteUser = async (req, res, next) => {
     }
 }
 
-exports.dispatchEmail = async (req, res, next) => {
+/* exports.dispatchEmail = async (req, res, next) => {
     console.log("email request came");
     let user = req.body;
     console.log({user});
@@ -219,4 +219,4 @@ exports.dispatchEmail = async (req, res, next) => {
             res.json({ success: true, data: info });
         }
     });
-}
+} */
