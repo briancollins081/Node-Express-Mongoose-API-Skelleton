@@ -1,4 +1,4 @@
-# Simple-react-redux-toolkit-project-backend
+# React-redux-toolkit-project-backend
 
 Node.js Express.js Mongoose.js REST API
 
@@ -20,6 +20,7 @@ The emailing bit was still pending but can be done **(TODO)**
   **databases**
   
   MONGO_DB_URI='MONGO DB URI FOR THE DATABASE GOES HER - mongodb://127.0.0.1:27017/redux-blog-app'
+  
   MONGO_DB_OPTIONS = '{"useNewUrlParser":true,"useUnifiedTopology":true,"useCreateIndex": true, "useFindAndModify": true}'
 
   **ports**
@@ -29,8 +30,13 @@ The emailing bit was still pending but can be done **(TODO)**
   **Emailing**
   
   EMAIL_HOST=
+  
   EMAIL_PORT=
+  
   EMAIL_USER=
+  
   EMAIL_PASS=
+  
   EMAIL_FROM_USER_NAME=
+  
   EMAIL_FROM_EMAIL=
