@@ -56,7 +56,7 @@ exports.addNewPost = async (req, res, next) => {
         const savedPost = await post.save();
         res.status(201).json({
             message: "Post created successful",
-            data: savedPost,
+            data: { ...savedPost, id: savedPost._id },
             success: true,
             vlderror: false
         });
@@ -80,7 +80,7 @@ exports.deletePost = async (req, res, next) => {
         }
         res.status(201).json({
             message: "Deleted post successful",
-            data: post,
+            data: { ...post, id: post._id },
             success: true,
             vlderror: false
         });
@@ -143,7 +143,7 @@ exports.editPost = async (req, res, next) => {
         const savedPost = await oldPost.save();
         res.status(200).json({
             message: "Edited post successfuly",
-            data: savedPost,
+            data: { ...savedPost, id: savedPost._id },
             vlderror: false
         });
     } catch (error) {
@@ -157,9 +157,9 @@ exports.getAllPosts = async (req, res, next) => {
     let { page, size, sort, type } = req.params;
     const regexQuery = {
         title: new RegExp(type, 'i')
-      }
+    }
     const typeObject = await Type.findOne(regexQuery);
-    if(!typeObject && type!='latest'){
+    if (!typeObject && type != 'latest') {
         return onError("Provide an existing type", 404, null, true, next);
     }
     size = +size <= 0 ? 10 : +size;
@@ -167,33 +167,34 @@ exports.getAllPosts = async (req, res, next) => {
     sort = +sort <= 0 ? -1 : 1;
     const skip = (page - 1) * +size
     try {
-      let posts = [];
-      if(typeObject){
-        posts = await Post.find({type: typeObject._id})
-            .populate('type')
-            .populate('creator')
-            .populate('category')
-            .populate('location')
-            .sort({ createdAt: sort })
-            .skip(skip)
-            .limit(size);
-      }
-      if(type == 'latest'){
-        posts = await Post.find()
-            .populate('type')
-            .populate('creator')
-            .populate('category')
-            .populate('location')
-            .sort({ createdAt: sort })
-            .skip(skip)
-            .limit(size);
-      }
+        let posts = [];
+        if (typeObject) {
+            posts = await Post.find({ type: typeObject._id })
+                .populate('type')
+                .populate('creator')
+                .populate('category')
+                .populate('location')
+                .sort({ createdAt: sort })
+                .skip(skip)
+                .limit(size);
+        }
+        if (type == 'latest') {
+            posts = await Post.find()
+                .populate('type')
+                .populate('creator')
+                .populate('category')
+                .populate('location')
+                .sort({ createdAt: sort })
+                .skip(skip)
+                .limit(size);
+        }
 
 
         const total = await Post.find().countDocuments();
-        if (!posts) {
+        if (!Array.isArray(posts)) {
             posts = [];
         }
+
         res.status(200).json({
             message: "All posts fetched successfully!",
             data: {
@@ -210,7 +211,69 @@ exports.getAllPosts = async (req, res, next) => {
         onError(error.toString(), 500, null, true, next);
     }
 }
+exports.getPostsByUser = async (req, res, next) => {
+    let { page, size, sort, type, userId } = req.params;
+    // console.log({page, size, sort, type, userId});
+    const regexQuery = {
+        title: new RegExp(type, 'i')
+    }
+    const typeObject = await Type.findOne(regexQuery);
+    if (!typeObject && type != 'latest') {
+        return onError("Provide an existing type", 404, null, true, next);
+    }
+    size = +size <= 0 ? 10 : +size;
+    page = +page <= 0 ? 1 : +page;
+    sort = +sort <= 0 || isNaN(+sort) ? -1 : 1;
+    const skip = (page - 1) * +size
+    try {
+        let posts = [];
+        if (typeObject) {
+            posts = await Post.find({ type: typeObject._id, creator: userId })
+                .populate('type')
+                .populate('creator')
+                .populate('category')
+                .populate('location')
+                .sort({ createdAt: sort })
+                .skip(skip)
+                .limit(size);
+        }
+        if (type == 'latest') {
+            posts = await Post.find()
+                .populate('type')
+                .populate('creator')
+                .populate('category')
+                .populate('location')
+                .sort({ createdAt: sort })
+                .skip(skip)
+                .limit(size);
+        }
 
+
+        const total = await Post.find().countDocuments();
+        if (!Array.isArray(posts)) {
+            posts = [];
+        }
+
+        posts.map(post => {
+            post.id = post._id;
+        })
+
+        res.status(200).json({
+            message: "All posts fetched successfully!",
+            data: {
+                posts,
+                page,
+                fetchSize: posts.length,
+                pageSize: size,
+                totalRecords: total
+            },
+            success: true,
+            vlderror: false
+        })
+    } catch (error) {
+        onError(error.toString(), 500, null, true, next);
+    }
+}
 exports.getPostById = async (req, res, next) => {
     const { postId } = req.params;
     try {
@@ -224,7 +287,7 @@ exports.getPostById = async (req, res, next) => {
         }
         res.status(200).json({
             message: "Post fetched successfully!",
-            data: post,
+            post,
             success: true,
             vlderror: false
         })
@@ -250,6 +313,12 @@ exports.searchPosts = async (req, res, next) => {
     if (!matchedPosts) {
         matchedPosts = [];
     }
+    if (!Array.isArray(matchedPosts)) {
+        matchedPosts = [];
+    }
+    matchedPosts.map(post => {
+        post.id = post._id;
+    })
     res.status(200);
     res.json({
         message: "Search applied successful",

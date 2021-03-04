@@ -16,7 +16,7 @@ exports.userSignup = async (req, res, next) => {
         // console.log(profileimage.path);
         if (!errors.isEmpty()) {
             deleteFile(profileimage.path);
-            return onError('Validation failed', 422, errors, true, next);
+            return onError('Validation failed', 200, errors, true, next);
         }
 
         const hpassword = await bcrypt.hash(password, 8);
@@ -72,7 +72,7 @@ exports.userSignin = async (req, res, next) => {
             message: "Login successfully",
             data: {
                 token: token,
-                userId: currentUser._id
+                id: currentUser._id
             },
             success: true
         })
@@ -83,8 +83,9 @@ exports.userSignin = async (req, res, next) => {
 }
 
 exports.getUsers = async (req, res, next) => {
-    let { page, size, sort } = req.params;
 
+    let { page, size, sort } = req.params;
+    // console.log({ page, size, sort });
     sort = !sort || +sort < 0 ? -1 : +sort > 0 ? 1 : -1;
 
     page = !page || +page < 1 ? 1 : +page;
@@ -99,9 +100,9 @@ exports.getUsers = async (req, res, next) => {
 
         res.status(200);
         res.json({
-            message: "Users fetched successfully",
-            data: users,
-            page: page,
+            message: "Users fetched successfully !",
+            users,
+            page,
             fetchSize: users.length,
             size: size,
             totalRecords: totalRecords,

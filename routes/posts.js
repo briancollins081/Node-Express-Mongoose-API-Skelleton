@@ -160,6 +160,13 @@ router.get(
 );
 
 router.get(
+    '/posts/:userId/:type/:page/:size/:sort',
+    // isAuth,
+    postController.getPostsByUser
+);
+
+
+router.get(
     '/posts/:postId',
     // isAuth,
     postController.getPostById
