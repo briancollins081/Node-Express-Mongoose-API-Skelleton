@@ -11,6 +11,7 @@ In the `app.js` which is the entry point, you can configure your mongo db `URI` 
 Remember to create your .env file for any variables that are used in the app which include:
 
 The emailing bit was still pending but can be done **(TODO)**
+
   `
   **auth**
   
